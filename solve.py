@@ -21,7 +21,9 @@ def parse_pcap(filename):
                 yield pkt_data[idx:].decode('ascii', errors='ignore')
             frame_num += 1
 
-events = list(parse_pcap('mobility_events.pcap'))
+import os
+pcap_f = "data/mobility_events.pcap" if os.path.exists("data/mobility_events.pcap") else "mobility_events.pcap"
+events = list(parse_pcap(pcap_f))
 
 parsed_events = []
 for ev_str in events:
