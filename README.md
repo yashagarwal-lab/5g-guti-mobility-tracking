@@ -84,18 +84,18 @@ $$\text{SUPI} \xrightarrow{\text{identity}} \text{Session}_1 \xrightarrow{\text{
 
 ### 3.3 Formal State Transition Rules
 
-Let the state vector at event step $k$ be $\mathbf{S}_k = (\text{ran}_k, \text{GUTI}_k, \mathcal{C}_k)$ where $\mathcal{C}_k$ is the set of unique visited cells:
+Let the state vector at event step $k$ be $\mathbf{S}_k = (\text{RAN}_k, \text{GUTI}_k, \mathcal{C}_k)$ where $\mathcal{C}_k$ is the set of unique visited cells:
 
-1. **Anchor**: If $e_k = \texttt{identity}$ and $\text{supi}(e_k) = \text{TARGET}$:
-   $$\text{ran}_{k+1} = \text{ran}(e_k)$$
-2. **Mobility (Handover)**: If $\text{ran}(e_k) == \text{ran}_k$ and $e_k = \texttt{handover}$:
-   $$\mathcal{C}_{k+1} = \mathcal{C}_k \cup \{\text{to}(e_k)\}$$
-3. **Identity Refresh**: If $\text{ran}(e_k) == \text{ran}_k$ and $e_k = \texttt{realloc}$:
-   $$\text{GUTI}_{k+1} = \text{newguti}(e_k)$$
-4. **Session Release**: If $\text{ran}(e_k) == \text{ran}_k$ and $e_k = \texttt{release}$:
-   $$\text{ran}_{k+1} = \bot \quad (\text{None}), \quad \text{GUTI}_{k+1} = \text{GUTI}_k$$
-5. **Re-attachment**: If $\text{ran}_k == \bot$, $e_k = \texttt{service}$, and $\text{guti}(e_k) == \text{GUTI}_k$:
-   $$\text{ran}_{k+1} = \text{ran}(e_k), \quad \mathcal{C}_{k+1} = \mathcal{C}_k \cup \{\text{cell}(e_k)\}$$
+1. **Anchor**: If `event == 'identity'` and `supi(e_k) == TARGET`:
+   - Set `current_ran = ran(e_k)`
+2. **Mobility (Handover)**: If `ran(e_k) == current_ran` and `event == 'handover'`:
+   - Update `visited_cells.add(to_cell)`
+3. **Identity Refresh**: If `ran(e_k) == current_ran` and `event == 'realloc'`:
+   - Update `current_guti = newguti(e_k)`
+4. **Session Release**: If `ran(e_k) == current_ran` and `event == 'release'`:
+   - Set `current_ran = None` (retain `current_guti`)
+5. **Re-attachment**: If `current_ran is None`, `event == 'service'`, and `guti(e_k) == current_guti`:
+   - Restore `current_ran = ran(e_k)` and record new cell in route
 
 ---
 
